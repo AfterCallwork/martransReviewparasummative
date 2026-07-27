@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maritime Transportation 11 — Review Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep: #0a1c2e;
+    --navy-card: #10273e;
+    --navy-line: #1f3c5c;
+    --brass: #c8983f;
+    --brass-dim: #8a6b32;
+    --paper: #ece4d3;
+    --paper-dim: #a9b8c6;
+    --ok: #4f9d78;
+    --ok-bg: rgba(79,157,120,0.14);
+    --bad: #c4614f;
+    --bad-bg: rgba(196,97,79,0.14);
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(1200px 600px at 20% -10%, rgba(200,152,63,0.08), transparent 60%),
+      var(--navy-deep);
+    color:var(--paper);
+    font-family:'Inter', sans-serif;
+    padding:32px 16px 60px;
+  }
+  .wrap{ max-width:720px; margin:0 auto; }
+
+  /* header */
+  .masthead{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    border-bottom:1px solid var(--navy-line);
+    padding-bottom:14px; margin-bottom:22px;
+    flex-wrap:wrap; gap:10px;
+  }
+  .masthead h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1.5rem; font-weight:700; margin:0; letter-spacing:.2px;
+    color:var(--paper);
+  }
+  .masthead .sub{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.72rem; color:var(--brass); letter-spacing:1.5px; text-transform:uppercase;
+    margin-top:4px;
+  }
+  .bearing{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.78rem; color:var(--paper-dim);
+    text-align:right;
+  }
+  .bearing b{ color:var(--brass); font-size:1rem; }
+
+  /* progress track */
+  .track{
+    height:3px; background:var(--navy-line); border-radius:2px; overflow:hidden; margin-bottom:26px;
+  }
+  .track-fill{
+    height:100%; background:var(--brass);
+    width:0%; transition:width .35s ease;
+  }
+
+  /* card */
+  .card{
+    background:var(--navy-card);
+    border:1px solid var(--navy-line);
+    border-radius:var(--radius);
+    padding:26px 24px;
+  }
+  .item-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.72rem; color:var(--brass-dim); letter-spacing:1px;
+    margin-bottom:10px; text-transform:uppercase;
+  }
+  .question{
+    font-size:1.08rem; line-height:1.55; margin:0 0 20px; color:var(--paper);
+    font-weight:500;
+  }
+
+  .options{ display:flex; flex-direction:column; gap:10px; }
+  .opt{
+    display:flex; align-items:flex-start; gap:12px;
+    text-align:left;
+    background:transparent;
+    border:1px solid var(--navy-line);
+    color:var(--paper);
+    border-radius:8px;
+    padding:12px 14px;
+    font-family:'Inter', sans-serif;
+    font-size:.94rem; line-height:1.4;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .opt:hover:not(:disabled){ border-color:var(--brass-dim); background:rgba(200,152,63,0.06); }
+  .opt .letter{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.8rem; color:var(--brass); border:1px solid var(--navy-line);
+    width:22px; height:22px; min-width:22px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    margin-top:1px;
+  }
+  .opt:disabled{ cursor:default; }
+  .opt.correct{ border-color:var(--ok); background:var(--ok-bg); }
+  .opt.correct .letter{ border-color:var(--ok); color:var(--ok); }
+  .opt.wrong{ border-color:var(--bad); background:var(--bad-bg); }
+  .opt.wrong .letter{ border-color:var(--bad); color:var(--bad); }
+  .opt.dim{ opacity:.45; }
+
+  .fib-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .fib-input{
+    flex:1; min-width:180px;
+    background:var(--navy-deep);
+    border:1px solid var(--navy-line);
+    color:var(--paper);
+    border-radius:8px;
+    padding:12px 14px;
+    font-family:'Inter', sans-serif;
+    font-size:.94rem;
+  }
+  .fib-input:focus{ outline:none; border-color:var(--brass); }
+  .fib-input:disabled{ opacity:.6; }
+  .check-btn{
+    background:var(--brass); color:var(--navy-deep); border:none;
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:.9rem;
+    padding:12px 20px; border-radius:8px; cursor:pointer;
+  }
+  .check-btn:hover{ filter:brightness(1.08); }
+  .check-btn:disabled{ opacity:.4; cursor:default; }
+
+  .feedback{
+    margin-top:16px; padding:12px 14px; border-radius:8px;
+    font-size:.9rem; line-height:1.5; display:none;
+    font-family:'Inter', sans-serif;
+  }
+  .feedback.show{ display:block; }
+  .feedback.ok{ background:var(--ok-bg); border:1px solid var(--ok); color:#cfe9db; }
+  .feedback.bad{ background:var(--bad-bg); border:1px solid var(--bad); color:#f0d3cd; }
+  .feedback b{ display:block; font-family:'IBM Plex Mono', monospace; font-size:.72rem; letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
+
+  .footer-row{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:22px;
+  }
+  .score-mono{
+    font-family:'IBM Plex Mono', monospace; font-size:.78rem; color:var(--paper-dim);
+  }
+  .score-mono b{ color:var(--brass); }
+  .next-btn{
+    background:transparent; border:1px solid var(--brass); color:var(--brass);
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:.9rem;
+    padding:11px 22px; border-radius:8px; cursor:pointer;
+    opacity:0; pointer-events:none; transition:opacity .2s ease;
+  }
+  .next-btn.show{ opacity:1; pointer-events:auto; }
+  .next-btn:hover{ background:rgba(200,152,63,0.1); }
+
+  /* summary */
+  .summary{ display:none; }
+  .summary.show{ display:block; }
+  .summary .rose{
+    width:88px; height:88px; margin:0 auto 18px;
+    border:1px solid var(--brass); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Grotesk', sans-serif; font-size:1.5rem; font-weight:700;
+    color:var(--brass); position:relative;
+  }
+  .summary h2{
+    font-family:'Space Grotesk', sans-serif; text-align:center; font-size:1.2rem; margin:0 0 6px;
+  }
+  .summary .verdict{ text-align:center; color:var(--paper-dim); font-size:.88rem; margin-bottom:26px; }
+  .missed-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
+  .missed-item{
+    border:1px solid var(--navy-line); border-radius:8px; padding:12px 14px;
+    font-size:.86rem; line-height:1.5;
+  }
+  .missed-item .q{ color:var(--paper); margin-bottom:6px; }
+  .missed-item .a{ font-family:'IBM Plex Mono', monospace; font-size:.76rem; color:var(--ok); }
+  .restart-btn{
+    display:block; width:100%;
+    background:var(--brass); color:var(--navy-deep); border:none;
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:.95rem;
+    padding:14px; border-radius:8px; cursor:pointer;
+  }
+  .restart-btn:hover{ filter:brightness(1.08); }
+  .quiz-body.hidden{ display:none; }
+
+  @media (max-width:480px){
+    .card{ padding:20px 16px; }
+    .masthead{ flex-direction:column; align-items:flex-start; }
+    .bearing{ text-align:left; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div>
+      <h1>Bridge Watch Review</h1>
+      <div class="sub">Maritime Transportation 11 · Support Level</div>
+    </div>
+    <div class="bearing">ITEM <b id="itemNum">01</b> / 25</div>
+  </div>
+
+  <div class="track"><div class="track-fill" id="trackFill"></div></div>
+
+  <div class="quiz-body" id="quizBody">
+    <div class="card">
+      <div class="item-tag" id="itemTag">Multiple Choice</div>
+      <p class="question" id="questionText"></p>
+
+      <div class="options" id="optionsBox"></div>
+
+      <div class="fib-row" id="fibBox" style="display:none;">
+        <input type="text" class="fib-input" id="fibInput" placeholder="Type your answer" autocomplete="off">
+        <button class="check-btn" id="checkBtn">Check</button>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="footer-row">
+        <div class="score-mono">SCORE <b id="scoreText">0 / 0</b></div>
+        <button class="next-btn" id="nextBtn">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary" id="summary">
+    <div class="rose" id="finalPct">0%</div>
+    <h2 id="summaryTitle">Watch Complete</h2>
+    <div class="verdict" id="summaryVerdict"></div>
+    <div class="missed-list" id="missedList"></div>
+    <button class="restart-btn" id="restartBtn">Review Again — Reshuffle</button>
+  </div>
+
+</div>
+
+<script>
+const RAW_ITEMS = [{"type":"mcq","q":"What is the primary purpose of a charter-party agreement in a ship's trading services?","options":["To record the technical specifications of a vessel for classification purposes.","To certify that a vessel has passed all required safety inspections.","To formalize the terms under which a vessel is hired for a shipping operation.","To list the cargo manifest details required before departure."],"correct":2},{"type":"mcq","q":"What does the International Safety Management (ISM) Code primarily focus on?","options":["Ensuring safety at sea and preventing harm to people and the environment.","Regulating the wages and benefits of seafarers on international voyages.","Establishing trade agreements between port authorities and shipowners.","Verifying the financial capacity of shipping companies to operate vessels."],"correct":0},{"type":"mcq","q":"Which statement best describes a key concern of the International Ship and Port Facility Security (ISPS) Code?","options":["It oversees the training curriculum for deck cadets and officers.","It sets standards for fuel efficiency and engine emissions on ships.","It manages the scheduling of cargo loading and unloading operations.","It addresses threat identification and security roles onboard and in ports."],"correct":3},{"type":"mcq","q":"How does the ISM Code differ from the ISPS Code in terms of focus?","options":["The ISM Code focuses on crew wages, while the ISPS Code focuses on training.","The ISM Code centers on safety management, while the ISPS Code centers on security.","The ISM Code covers cargo handling, while the ISPS Code covers navigation.","The ISM Code applies only to ports, while the ISPS Code applies only at sea."],"correct":1},{"type":"mcq","q":"What is the main function of navigational equipment used on the bridge?","options":["To support position fixing, collision avoidance, and grounding prevention.","To manage the ship's cargo distribution and loading balance.","To coordinate crew shift schedules during long voyages.","To regulate the temperature and ventilation inside the cargo holds."],"correct":0},{"type":"mcq","q":"What is the primary role of the Global Maritime Distress and Safety System (GMDSS)?","options":["To schedule maintenance checks for the ship's main engine.","To monitor cargo weight distribution across ship compartments.","To calculate fuel consumption rates during extended voyages.","To transmit distress alerts and enable emergency communication at sea."],"correct":3},{"type":"mcq","q":"Which situation illustrates an internal factor affecting a ship's stability?","options":["A sudden increase in wave height causing the vessel to roll.","Uneven distribution of cargo weight shifting the ship's center of gravity.","Strong crosswinds pushing the vessel off its intended course.","Entering shallow waters that reduce the ship's under-keel clearance."],"correct":1},{"type":"mcq","q":"Which scenario best represents an external factor that could affect a ship's stability?","options":["Fuel consumption gradually reducing the ship's overall weight.","Cargo shifting due to improper securing during loading.","Rough waves and strong winds acting on the vessel's hull.","Ballast water being unevenly distributed between tanks."],"correct":2},{"type":"mcq","q":"Why is it important for the crew to monitor both internal and external factors affecting stability?","options":["To decide which ports are permitted for the vessel to dock.","To determine the exact market value of the vessel and its cargo.","To calculate the total number of crew members needed onboard.","To anticipate and respond to conditions that could cause capsizing."],"correct":3},{"type":"mcq","q":"How do a deck watchkeeper's duties at sea differ from those at anchor?","options":["Duties at sea involve port clearance, while duties at anchor involve crew payroll.","Duties at sea focus on cargo loading, while duties at anchor focus on refueling operations.","Duties at sea emphasize navigation, while duties at anchor emphasize monitoring the vessel's position.","Duties at sea require engine repairs, while duties at anchor require passenger boarding."],"correct":2},{"type":"mcq","q":"What is a key responsibility of the deck watchkeeper when the ship is at port?","options":["Overseeing safety during cargo operations and monitoring gangway access.","Plotting the vessel's course using celestial navigation methods.","Calculating fuel reserves needed for the next ocean crossing.","Adjusting the ship's ballast to counter open-sea wave action."],"correct":0},{"type":"mcq","q":"During a fire patrol, what does the 'roving' function primarily involve?","options":["Training new crew members on evacuation procedures.","Regularly walking through designated areas to check for fire hazards.","Repairing damaged firefighting equipment found onboard.","Recording the ship's fuel levels at scheduled intervals."],"correct":1},{"type":"mcq","q":"What should a crew member do immediately upon detecting signs of fire during a patrol?","options":["Wait until the next scheduled patrol to confirm the finding.","Report the finding promptly to the officer on watch.","Attempt to extinguish the fire alone before informing anyone.","Record the incident in the logbook at the end of the shift."],"correct":1},{"type":"mcq","q":"Which equipment would a crew member most likely use for internal communication onboard?","options":["VHF radio used to contact nearby vessels.","GMDSS terminal used for distress signaling.","Satellite phone connected to shore-based offices.","Intercom or walkie-talkie between crew stations."],"correct":3},{"type":"mcq","q":"Which type of equipment is used for communication between the ship and shore-based or other vessels?","options":["Intercom system linking crew quarters and the bridge.","Talk-back system installed near the engine room.","VHF or satellite communication equipment.","Telephone extension connecting the bridge and galley."],"correct":2},{"type":"mcq","q":"Which situation would most likely require the helmsman to switch from automatic pilot to manual steering?","options":["The ship is entering a narrow channel requiring precise maneuvering.","The engine room requests a routine fuel consumption report.","The vessel is cruising steadily in open sea with no nearby traffic.","The crew is conducting a scheduled inventory of safety equipment."],"correct":0},{"type":"mcq","q":"What does the helm order \"midships\" instruct the helmsman to do?","options":["Turn the rudder fully to the starboard side.","Shift the rudder to the opposite direction immediately.","Return the rudder to the centerline position.","Hold the current heading without further adjustment."],"correct":2},{"type":"mcq","q":"What should an officer do before formally taking over the watch from the previous officer?","options":["Notify the shore office that a new watch has started.","Confirm the vessel's position, course, and any pending instructions.","Inspect the galley to verify meal preparation schedules.","Immediately begin recording fuel consumption for the new shift."],"correct":1},{"type":"mcq","q":"Which action reflects proper compliance with MARPOL environmental protection procedures?","options":["Recording and properly disposing of oily waste according to regulations.","Discharging untreated bilge water whenever convenient during the voyage.","Disposing of garbage overboard once the ship is far from shore.","Releasing ballast water without inspection upon reaching port."],"correct":0},{"type":"mcq","q":"What information is essential to pass on during the handover of a watch?","options":["The market price of the cargo currently being transported.","The maintenance history of the galley equipment.","The personal schedules of off-duty crew members.","The vessel's position, traffic situation, and any operational concerns."],"correct":3},{"type":"fib","q":"A charter agreement in which the shipowner leases out the vessel without crew, and the charterer manages and mans it, is called a ________ charter.","answer":"Bareboat"},{"type":"fib","q":"The alarm system that alerts the bridge team when no navigational activity is detected within a set time, helping prevent watchkeeping fatigue-related incidents, is the ________.","answer":"BNWAS (Bridge Navigational Watch Alarm System)"},{"type":"fib","q":"A communication method where the sender must receive confirmation from the receiver before the next message is sent is called ________ communication.","answer":"Closed-loop"},{"type":"fib","q":"On a magnetic compass, the fixed marker that shows the direction the ship is heading is called the ________.","answer":"Direction of travel arrow"},{"type":"fib","q":"In a gyro compass system, the unit that receives and displays heading information sent from the master gyro is called the ________.","answer":"Repeater gyro"}];
+
+let order = [];
+let idx = 0;
+let score = 0;
+let answered = false;
+let missed = [];
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+// shuffle option order within each MCQ item too, tracking new correct index
+function prepItems(){
+  return RAW_ITEMS.map(it=>{
+    if(it.type!=='mcq') return {...it};
+    const idxs = shuffle([0,1,2,3]);
+    const options = idxs.map(i=>it.options[i]);
+    const correct = idxs.indexOf(it.correct);
+    return {type:'mcq', q:it.q, options, correct};
+  });
+}
+
+function init(){
+  order = shuffle(prepItems());
+  idx = 0; score = 0; answered = false; missed = [];
+  document.getElementById('summary').classList.remove('show');
+  document.getElementById('quizBody').classList.remove('hidden');
+  renderItem();
+}
+
+function updateHeader(){
+  document.getElementById('itemNum').textContent = String(idx+1).padStart(2,'0');
+  document.getElementById('trackFill').style.width = ((idx)/order.length*100)+'%';
+  document.getElementById('scoreText').textContent = score + ' / ' + idx;
+}
+
+function renderItem(){
+  answered = false;
+  const item = order[idx];
+  updateHeader();
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').innerHTML = '';
+  document.getElementById('nextBtn').classList.remove('show');
+  document.getElementById('questionText').textContent = item.q;
+
+  const optionsBox = document.getElementById('optionsBox');
+  const fibBox = document.getElementById('fibBox');
+  optionsBox.innerHTML = '';
+
+  if(item.type === 'mcq'){
+    document.getElementById('itemTag').textContent = 'Multiple Choice';
+    optionsBox.style.display = 'flex';
+    fibBox.style.display = 'none';
+    const letters = ['A','B','C','D'];
+    item.options.forEach((opt, i)=>{
+      const btn = document.createElement('button');
+      btn.className = 'opt';
+      btn.innerHTML = '<span class="letter">'+letters[i]+'</span><span>'+opt+'</span>';
+      btn.onclick = ()=>handleMcqAnswer(i, btn);
+      optionsBox.appendChild(btn);
+    });
+  } else {
+    document.getElementById('itemTag').textContent = 'Fill in the Blank';
+    optionsBox.style.display = 'none';
+    fibBox.style.display = 'flex';
+    const input = document.getElementById('fibInput');
+    input.value = '';
+    input.disabled = false;
+    const btn = document.getElementById('checkBtn');
+    btn.disabled = false;
+    btn.onclick = ()=>handleFibAnswer(item);
+    input.onkeydown = (e)=>{ if(e.key==='Enter' && !answered) handleFibAnswer(item); };
+    input.focus();
+  }
+}
+
+function handleMcqAnswer(chosenIdx, btnEl){
+  if(answered) return;
+  answered = true;
+  const item = order[idx];
+  const allBtns = document.querySelectorAll('#optionsBox .opt');
+  allBtns.forEach(b=>b.disabled = true);
+
+  const isCorrect = chosenIdx === item.correct;
+  if(isCorrect){
+    score++;
+    btnEl.classList.add('correct');
+    showFeedback(true, null);
+  } else {
+    btnEl.classList.add('wrong');
+    allBtns[item.correct].classList.add('correct');
+    allBtns.forEach((b,i)=>{ if(i!==chosenIdx && i!==item.correct) b.classList.add('dim'); });
+    showFeedback(false, item.options[item.correct]);
+    missed.push({q:item.q, a:item.options[item.correct]});
+  }
+  document.getElementById('scoreText').textContent = score + ' / ' + (idx+1);
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+function handleFibAnswer(item){
+  if(answered) return;
+  answered = true;
+  const input = document.getElementById('fibInput');
+  input.disabled = true;
+  document.getElementById('checkBtn').disabled = true;
+
+  const given = input.value.trim().toLowerCase();
+  const correctCore = item.answer.split('(')[0].trim().toLowerCase();
+  const isCorrect = given.length>0 && (given === correctCore || correctCore.includes(given) && given.length>2);
+
+  if(isCorrect){
+    score++;
+    input.style.borderColor = 'var(--ok)';
+    showFeedback(true, null);
+  } else {
+    input.style.borderColor = 'var(--bad)';
+    showFeedback(false, item.answer);
+    missed.push({q:item.q, a:item.answer});
+  }
+  document.getElementById('scoreText').textContent = score + ' / ' + (idx+1);
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+function showFeedback(isCorrect, correctText){
+  const fb = document.getElementById('feedback');
+  fb.classList.add('show');
+  if(isCorrect){
+    fb.classList.add('ok');
+    fb.innerHTML = '<b>Correct</b>Well answered — carry on to the next item.';
+  } else {
+    fb.classList.add('bad');
+    fb.innerHTML = '<b>Not quite</b>Correct answer: ' + correctText;
+  }
+}
+
+document.getElementById('nextBtn').onclick = ()=>{
+  idx++;
+  if(idx >= order.length){
+    finish();
+  } else {
+    renderItem();
+  }
+};
+
+function finish(){
+  document.getElementById('trackFill').style.width = '100%';
+  document.getElementById('quizBody').classList.add('hidden');
+  const pct = Math.round(score/order.length*100);
+  document.getElementById('finalPct').textContent = pct+'%';
+  document.getElementById('summaryTitle').textContent = score + ' of ' + order.length + ' correct';
+  let verdict = 'Keep drilling the missed items below.';
+  if(pct===100) verdict = 'Full marks — steady as she goes.';
+  else if(pct>=80) verdict = 'Solid watch. Review the misses below.';
+  else if(pct>=60) verdict = 'Getting there — revisit the topics below.';
+  document.getElementById('summaryVerdict').textContent = verdict;
+
+  const list = document.getElementById('missedList');
+  list.innerHTML = '';
+  if(missed.length===0){
+    const d = document.createElement('div');
+    d.className = 'missed-item';
+    d.innerHTML = '<div class="q">No misses this round.</div>';
+    list.appendChild(d);
+  } else {
+    missed.forEach(m=>{
+      const d = document.createElement('div');
+      d.className = 'missed-item';
+      d.innerHTML = '<div class="q">'+m.q+'</div><div class="a">Correct: '+m.a+'</div>';
+      list.appendChild(d);
+    });
+  }
+  document.getElementById('summary').classList.add('show');
+}
+
+document.getElementById('restartBtn').onclick = init;
+
+init();
+</script>
+</body>
+</html>
